@@ -1,12 +1,89 @@
 ﻿<Window x:Class="Shop.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Shop"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        xmlns:views="clr-namespace:Shop.Views"
+        Title="Shop Manager" Height="600" Width="900"
+        WindowState="Maximized">
 
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <!-- Боковое -->
+            <ColumnDefinition Width="*"/>
+            <!-- право-->
+        </Grid.ColumnDefinitions>
+
+        <!-- менюха -->
+        <Border Grid.Column="0" Background="DarkSlateGray">
+            <StackPanel>
+                <!-- Шапка с именем  -->
+                <Border Background="DarkGray" Height="60">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock Text="Пользователь" 
+                                   Foreground="White" 
+                                   FontSize="16"
+                                   FontWeight="Bold" Height="25"
+                                   />
+                        <TextBlock Text="{Binding CurrentUser.FullName}" 
+                                   Foreground="White" 
+                                   HorizontalAlignment="Center"
+                                   Margin="0,5,0,0"/>
+                        <TextBlock Text="{Binding CurrentUser.Role.Name}" 
+                                   Foreground="LightGray" 
+                                   FontSize="12"
+                                   HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Кнопки меню -->
+                <Button Content="Касса" 
+                        Height="50"
+                        Margin="10"
+                        Command="{Binding NavigateCommand}"
+                        CommandParameter="Sale"/>
+
+                <Button Content="Товары" 
+                        Height="50"
+                        Margin="10"
+                        Command="{Binding NavigateCommand}"
+                        CommandParameter="Products"
+                        Visibility="{Binding CanManageProducts}"/>
+
+                <Button Content="Поставки" 
+                        Height="50"
+                        Margin="10"
+                        Command="{Binding NavigateCommand}"
+                        CommandParameter="Supplies"
+                        Visibility="{Binding CanManageSupplies}"/>
+
+                <Button Content="Карты лояльности" 
+                        Height="50"
+                        Margin="10"
+                        Command="{Binding NavigateCommand}"
+                        CommandParameter="Loyalty"
+                        Visibility="{Binding CanManageLoyalty}"/>
+
+                <Button Content="Отчёты" 
+                        Height="50"
+                        Margin="10"
+                        Command="{Binding NavigateCommand}"
+                        CommandParameter="Reports"
+                        Visibility="{Binding CanViewReports}"/>
+
+
+                <Button Content="Выход" 
+                        Height="50"
+                        Margin="10"
+                        VerticalAlignment="Bottom"
+                        Command="{Binding LogoutCommand}"
+                        Background="Red"
+                        Foreground="White"/>
+            </StackPanel>
+        </Border>
+
+
+        <Border Grid.Column="1" Background="LightGray">
+            <ContentControl Content="{Binding CurrentView}"/>
+        </Border>
     </Grid>
 </Window>

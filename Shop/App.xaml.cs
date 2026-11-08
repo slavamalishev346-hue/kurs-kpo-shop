@@ -16,13 +16,13 @@ namespace Shop
             //  ядро Ninject
             Kernel = new StandardKernel();
 
-            //  модули
+            
             Kernel.Load(new DalModule());
             Kernel.Load(new BllModule());
 
-            // главное окно через Ninject
-            var mainWindow = Kernel.Get<MainWindow>();
-            mainWindow.Show();
+            
+            var loginWindow = Kernel.Get<LoginWindow>();
+            loginWindow.Show();
         }
     }
 }

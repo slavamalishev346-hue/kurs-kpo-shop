@@ -4,10 +4,8 @@ namespace Shop.Interfaces.Services
 {
     public interface ILoyaltyService
     {
-  
         LoyaltyCardDto GetCardByNumber(string cardNumber);
-
-        // повышение уровня карты 
-        void UpdateCardLevel(int cardId);
+        void IssueNewCard(string cardNumber, string customerName);
+        void UpdateCardLevel(int cardId); 
     }
 }
