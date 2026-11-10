@@ -1,10 +1,10 @@
 ﻿<Application x:Class="Shop.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Shop">
+             xmlns:local="clr-namespace:Shop"
+             xmlns:core="clr-namespace:Shop.Core">
+  
     <Application.Resources>
-         
+        <core:ArticleToImageConverter x:Key="ArticleToImageConverter"/>
     </Application.Resources>
 </Application>
-
-    

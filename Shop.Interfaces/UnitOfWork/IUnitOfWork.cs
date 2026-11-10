@@ -1,5 +1,5 @@
 ﻿using System;
-using Shop.Interfaces.Repositories; // Убедись, что этот using правильный для твоей структуры
+using Shop.Interfaces.Repositories; 
 
 namespace Shop.Interfaces.UnitOfWork
 {

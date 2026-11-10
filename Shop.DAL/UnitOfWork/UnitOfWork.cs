@@ -14,6 +14,8 @@ namespace Shop.DAL.UnitOfWork
         private ILoyaltyCardRepository _loyaltyCards;
         private ILoyaltyLevelRepository _loyaltyLevels;
         private ISaleRepository _sales;
+        private IProductRepository? _products;
+        private ISupplyItemRepository? _supplyItems;
         public UnitOfWork(MagazContext context)
         {
             _context = context;
@@ -35,11 +37,29 @@ namespace Shop.DAL.UnitOfWork
                 return _sales;
             }
         }
-        public IProductRepository Products => null;
-       
+        public IProductRepository Products
+        {
+            get
+            {
+                if (_products == null)
+                    _products = new ProductRepository(_context);
+                return _products;
+            }
+        }
+
+        public ISupplyItemRepository SupplyItems
+        {
+            get
+            {
+                if (_supplyItems == null)
+                    _supplyItems = new SupplyItemRepository(_context);
+                return _supplyItems;
+            }
+        }
+     
         public ISaleItemRepository SaleItems => null;
         public ISupplyRepository Supplies => null;
-        public ISupplyItemRepository SupplyItems => null;
+    
 
         public IReturnItemRepository ReturnItems => null;
 

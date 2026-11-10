@@ -18,10 +18,12 @@
         </Grid.RowDefinitions>
 
         <TextBlock Text="Логин:" FontWeight="Bold"/>
+        <!-- Убрали Text="admin" отсюда -->
         <TextBox Grid.Row="2" Height="25" Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}"/>
 
         <TextBlock Grid.Row="4" Text="Пароль:" FontWeight="Bold"/>
-        <PasswordBox x:Name="pwdBox" Grid.Row="6" Height="25"/>
+        <!-- Тут оставляем, так как привязки нет -->
+        <PasswordBox x:Name="pwdBox" Grid.Row="6" Height="25" Password="admin123"/>
 
         <TextBlock Grid.Row="7" Text="{Binding ErrorMessage}" Foreground="Red" 
                    HorizontalAlignment="Center" Margin="0,10,0,0"/>

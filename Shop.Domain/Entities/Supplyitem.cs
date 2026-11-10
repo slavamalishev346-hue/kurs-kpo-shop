@@ -18,7 +18,7 @@ public partial class Supplyitem
     public DateOnly? ExpiryDate { get; set; }
 
     public int QuantityRemain { get; set; }
-
+    public double? DiscountedPrice { get; set; } 
     public virtual Product Product { get; set; } = null!;
 
     public virtual ICollection<Saleitem> Saleitems { get; set; } = new List<Saleitem>();

@@ -70,7 +70,10 @@ namespace Shop.ViewModels
                         CurrentView = new SaleView();
                         break;
                     case "Products":
-                        CurrentView = new ProductsView();
+                        var productsViewModel = App.Kernel.Get<ProductsViewModel>();
+                        var productsView = new ProductsView();
+                        productsView.DataContext = productsViewModel;
+                        CurrentView = productsView;
                         break;
                     case "Supplies":
                         CurrentView = new SuppliesView();
@@ -85,6 +88,7 @@ namespace Shop.ViewModels
                     case "Reports":
                         CurrentView = new ReportsView();
                         break;
+              
                 }
             }
         }

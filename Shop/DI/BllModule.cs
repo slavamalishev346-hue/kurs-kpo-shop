@@ -16,7 +16,7 @@ namespace Shop.DI
             Bind<ISupplyService>().To<SupplyService>().InTransientScope();
             Bind<IUserService>().To<UserService>();
             Bind<MainWindowViewModel>().ToSelf().InTransientScope();
-
+         
             Bind<LoyaltyViewModel>().ToSelf().InTransientScope();
         }
     }

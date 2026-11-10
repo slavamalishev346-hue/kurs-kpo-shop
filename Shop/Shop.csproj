@@ -18,6 +18,14 @@
   <ItemGroup>
     <ProjectReference Include="..\Shop.BLL\Shop.BLL.csproj" />
     <ProjectReference Include="..\Shop.DAL\Shop.DAL.csproj" />
+
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Content Include="Images\Products\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
