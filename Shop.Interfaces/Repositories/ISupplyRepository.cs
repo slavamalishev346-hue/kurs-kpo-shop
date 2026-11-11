@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Shop.Domain.Entities;
+using Shop.Interfaces.Repositories;
 
 namespace Shop.Interfaces.Repositories
 {
-    public class ISupplyRepository
+    public interface ISupplyRepository : IRepository<Supply>
     {
+      
     }
 }

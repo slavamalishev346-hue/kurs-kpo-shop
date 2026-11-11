@@ -1,12 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Shop.Domain.Entities;
+using Shop.Interfaces.Repositories;
 
 namespace Shop.DAL.Repositories
 {
-    public class SaleItemRepository
+    
+    public class SaleItemRepository : Repository<Saleitem>, ISaleItemRepository
     {
+        public SaleItemRepository(MagazContext context) : base(context) { }
+
+        public IEnumerable<Saleitem> GetBySaleId(int saleId)
+        {
+            return _context.Saleitems.Where(si => si.SaleId == saleId).ToList();
+        }
     }
 }

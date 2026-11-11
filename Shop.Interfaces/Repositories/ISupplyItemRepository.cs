@@ -8,7 +8,7 @@ namespace Shop.Interfaces.Repositories
     {
        
         IEnumerable<Supplyitem> GetByProductId(int productId);
-
+        Supplyitem GetByIdWithProduct(int id);
 
     }
 }

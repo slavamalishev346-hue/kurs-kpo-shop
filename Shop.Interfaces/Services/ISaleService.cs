@@ -1,22 +1,18 @@
-﻿using Shop.Interfaces.DTO;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Shop.Interfaces.DTO;
 
 namespace Shop.Interfaces.Services
 {
     public interface ISaleService
     {
-       
-        List<SaleDto> GetSales();
-
-        
         SaleDto GetSaleById(int saleId);
+        List<SaleDto> GetAllSales();
+        List<SaleDto> GetSalesByDateRange(DateTime startDate, DateTime endDate);
 
-        // Функция 2, 3, 4, 5 из ТЗ: 
-  
-        SaleDto CreateSale(int cashierId, string loyaltyCardNumber, List<SaleItemDto> items);
+        SaleDto CreateSale(List<SaleItemDto> items, string cardNumber, int cashierId);
 
-        // Возврат
+      
         void ProcessReturn(int saleId, List<ReturnDto> returnItems, int cashierId);
     }
 }

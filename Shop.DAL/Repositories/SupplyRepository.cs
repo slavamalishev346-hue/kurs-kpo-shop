@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Shop.Domain.Entities;
+using Shop.Interfaces.Repositories;
 
 namespace Shop.DAL.Repositories
 {
-    public class SupplyRepository
+   
+    public class SupplyRepository : Repository<Supply>, ISupplyRepository
     {
+       
+        public SupplyRepository(MagazContext context) : base(context) { }
     }
 }

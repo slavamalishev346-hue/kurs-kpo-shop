@@ -67,7 +67,14 @@ namespace Shop.ViewModels
                 switch (viewName)
                 {
                     case "Sale":
-                        CurrentView = new SaleView();
+                        
+                        var saleViewModel = App.Kernel.Get<SaleViewModel>();
+
+                        var saleView = new SaleView();
+
+                        saleView.DataContext = saleViewModel;
+
+                        CurrentView = saleView;
                         break;
                     case "Products":
                         var productsViewModel = App.Kernel.Get<ProductsViewModel>();

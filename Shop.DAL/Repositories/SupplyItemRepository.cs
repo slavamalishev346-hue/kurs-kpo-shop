@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Shop.Domain.Entities;
 using Shop.Interfaces.Repositories;
 
@@ -9,12 +10,19 @@ namespace Shop.DAL.Repositories
     {
         public SupplyItemRepository(MagazContext context) : base(context) { }
 
-        // Получить все партии товара
+        
         public IEnumerable<Supplyitem> GetByProductId(int productId)
         {
             return _context.Supplyitems
                 .Where(si => si.ProductId == productId)
                 .ToList();
+
+        }
+        public Supplyitem GetByIdWithProduct(int id)
+        {
+            return _context.Supplyitems
+                .Include(s => s.Product) 
+                .FirstOrDefault(s => s.Id == id);
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Windows;
 using Shop.Core;
 using Shop.Interfaces.DTO;
 using Shop.Interfaces.Services;
+using Shop.Views;
 
 namespace Shop.ViewModels
 {
@@ -91,7 +92,7 @@ namespace Shop.ViewModels
             DeleteProductCommand = new RelayCommand(_ => DeleteProduct(), _ => SelectedProduct != null);
             ApplyDiscountCommand = new RelayCommand(_ => ApplyDiscount());
 
-            // Автомат загрузка при создании
+            
             LoadProducts();
         }
 
@@ -161,12 +162,29 @@ namespace Shop.ViewModels
 
         private void OpenAddProductWindow()
         {
-            var editWindow = new Views.ProductEditWindow(null);
+            var editWindow = new ProductEditWindow();
             editWindow.Owner = Application.Current.MainWindow;
 
+            
             if (editWindow.ShowDialog() == true)
             {
-                LoadProducts();
+                try
+                {
+                    
+                    _productService.RegisterProduct(editWindow.ResultDto);
+
+                    MessageBox.Show("Товар успешно добавлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    LoadProducts();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    MessageBox.Show(ex.Message, "Ошибка добавления", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Произошла ошибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 

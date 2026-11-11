@@ -1,6 +1,5 @@
 ﻿using System;
 using Shop.DAL.Repositories;
-using Shop.Domain.Entities;
 using Shop.Interfaces.Repositories;
 using Shop.Interfaces.UnitOfWork;
 
@@ -14,54 +13,53 @@ namespace Shop.DAL.UnitOfWork
         private ILoyaltyCardRepository _loyaltyCards;
         private ILoyaltyLevelRepository _loyaltyLevels;
         private ISaleRepository _sales;
-        private IProductRepository? _products;
-        private ISupplyItemRepository? _supplyItems;
+        private IProductRepository _products;
+        private ISupplyItemRepository _supplyItems;
+
+        // ✅ Добавляем поля для недостающих репозиториев
+        private ISaleItemRepository _saleItems;
+        private ISupplyRepository _supplies;
+        private IReturnItemRepository _returnItems;
+
         public UnitOfWork(MagazContext context)
         {
             _context = context;
         }
 
-        
         public IUserRepository Users => _users ??= new UserRepository(_context);
         public ILoyaltyCardRepository LoyaltyCards => _loyaltyCards ??= new LoyaltyCardRepository(_context);
-
         public ILoyaltyLevelRepository LoyaltyLevels => _loyaltyLevels ??= new LoyaltyLevelRepository(_context);
+
         public ISaleRepository Sales
         {
-            get
-            {
-                if (_sales == null)
-                {
-                    _sales = new SaleRepository(_context);
-                }
-                return _sales;
-            }
+            get => _sales ??= new SaleRepository(_context);
         }
+
         public IProductRepository Products
         {
-            get
-            {
-                if (_products == null)
-                    _products = new ProductRepository(_context);
-                return _products;
-            }
+            get => _products ??= new ProductRepository(_context);
         }
 
         public ISupplyItemRepository SupplyItems
         {
-            get
-            {
-                if (_supplyItems == null)
-                    _supplyItems = new SupplyItemRepository(_context);
-                return _supplyItems;
-            }
+            get => _supplyItems ??= new SupplyItemRepository(_context);
         }
-     
-        public ISaleItemRepository SaleItems => null;
-        public ISupplyRepository Supplies => null;
-    
 
-        public IReturnItemRepository ReturnItems => null;
+        // ✅ ИСПРАВЛЕННЫЕ СВОЙСТВА (больше никаких null!)
+        public ISaleItemRepository SaleItems
+        {
+            get => _saleItems ??= new SaleItemRepository(_context);
+        }
+
+        public ISupplyRepository Supplies
+        {
+            get => _supplies ??= new SupplyRepository(_context);
+        }
+
+        public IReturnItemRepository ReturnItems
+        {
+            get => _returnItems ??= new ReturnItemRepository(_context);
+        }
 
         public int SaveChanges()
         {
