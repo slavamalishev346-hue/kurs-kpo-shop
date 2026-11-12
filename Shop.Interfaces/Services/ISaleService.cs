@@ -12,7 +12,7 @@ namespace Shop.Interfaces.Services
 
         SaleDto CreateSale(List<SaleItemDto> items, string cardNumber, int cashierId);
 
-      
+        decimal GetLoyaltyDiscountPercent(string cardNumber);
         void ProcessReturn(int saleId, List<ReturnDto> returnItems, int cashierId);
     }
 }

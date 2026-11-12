@@ -3,6 +3,7 @@ using System.Windows.Input;
 using Ninject;
 using Shop.Core;
 using Shop.Domain.Entities;
+using Shop.Interfaces.Services;
 using Shop.Views;
 
 namespace Shop.ViewModels
@@ -66,14 +67,19 @@ namespace Shop.ViewModels
             {
                 switch (viewName)
                 {
+                    
                     case "Sale":
-                        
-                        var saleViewModel = App.Kernel.Get<SaleViewModel>();
+                       
+                        int cashierId = CurrentUser?.Id ?? 0;
+
+                        var saleViewModel = new SaleViewModel(
+                            App.Kernel.Get<ISaleService>(),
+                            App.Kernel.Get<IProductService>(),
+                            cashierId
+                        );
 
                         var saleView = new SaleView();
-
                         saleView.DataContext = saleViewModel;
-
                         CurrentView = saleView;
                         break;
                     case "Products":

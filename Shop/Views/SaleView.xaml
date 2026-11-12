@@ -4,86 +4,224 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
-             d:DesignHeight="600" d:DesignWidth="1000"
-             Background="#F5F5F5">
+             d:DesignHeight="600" d:DesignWidth="1100"
+             Background="WhiteSmoke">
 
     <UserControl.Resources>
         <Style x:Key="ModernButton" TargetType="Button">
-            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="Padding" Value="12,6"/>
             <Setter Property="Margin" Value="5"/>
-            <Setter Property="Background" Value="#E3F2FD"/>
-            <Setter Property="BorderBrush" Value="#90CAF9"/>
+            <Setter Property="Background" Value="AliceBlue"/>
+            <Setter Property="BorderBrush" Value="SkyBlue"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="#1565C0"/>
+            <Setter Property="Foreground" Value="RoyalBlue"/>
         </Style>
         <Style x:Key="CheckoutButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
-            <Setter Property="Background" Value="#4CAF50"/>
-            <Setter Property="BorderBrush" Value="#388E3C"/>
+            <Setter Property="Background" Value="MediumSeaGreen"/>
+            <Setter Property="BorderBrush" Value="ForestGreen"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontSize" Value="16"/>
-        </Style>
-
-        <!-- Стили для выравнивания текста в ячейках -->
-        <Style x:Key="CenterAlignedCell" TargetType="TextBlock">
-            <Setter Property="TextAlignment" Value="Center"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-        </Style>
-        <Style x:Key="RightAlignedCell" TargetType="TextBlock">
-            <Setter Property="TextAlignment" Value="Right"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="0,0,5,0"/>
-            <!-- Небольшой отступ от края -->
         </Style>
     </UserControl.Resources>
 
     <Grid Margin="20">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
-            <!-- Левая часть: Товары -->
-            <ColumnDefinition Width="1.2*"/>
-            <!-- Правая часть: Чек -->
+            <ColumnDefinition Width="1.3*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- ЛЕВАЯ ЧАСТЬ: Список доступных товаров -->
+        <!-- ЛЕВАЯ: Товары -->
         <Border Grid.Column="0" Background="White" CornerRadius="8" Padding="15" Margin="0,0,10,0">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="📦 Доступные товары" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+                <TextBlock Grid.Row="0"
+                           Text="📦 Доступные товары"
+                           FontSize="18" FontWeight="Bold"
+                           Margin="0,0,0,10"
+                           HorizontalAlignment="Left"/>
 
-                <DataGrid Grid.Row="1" ItemsSource="{Binding AvailableProducts}" 
+                <TextBox Grid.Row="1"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Padding="8" Margin="0,0,0,10"
+                         BorderBrush="SkyBlue" BorderThickness="1"
+                         VerticalContentAlignment="Center" FontSize="13"/>
+
+                <DataGrid Grid.Row="2"
+                          ItemsSource="{Binding AvailableProducts}"
+                          SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
                           AutoGenerateColumns="False" IsReadOnly="True"
                           CanUserAddRows="False" CanUserDeleteRows="False"
-                          SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
-                          RowBackground="White" AlternatingRowBackground="#FAFAFA"
-                          GridLinesVisibility="Horizontal">
+                          RowBackground="White" AlternatingRowBackground="GhostWhite"
+                          GridLinesVisibility="Horizontal"
+                          RowHeight="50"
+                          BorderThickness="0">
+
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="FontSize" Value="13"/>
+                            <Setter Property="FontWeight" Value="SemiBold"/>
+                            <Setter Property="Padding" Value="10,8"/>
+                            <Setter Property="Background" Value="WhiteSmoke"/>
+                            <Setter Property="Foreground" Value="DimGray"/>
+                            <Setter Property="BorderBrush" Value="Gainsboro"/>
+                            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+
+                    <DataGrid.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="Padding" Value="10,5"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="AliceBlue"/>
+                                    <Setter Property="Foreground" Value="RoyalBlue"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.CellStyle>
+
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Артикул" Binding="{Binding Article}" Width="80"/>
-                        <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="*"/>
+                        <DataGridTextColumn Header="Артикул" Binding="{Binding Article}" Width="90">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontSize" Value="12"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="Foreground" Value="Gray"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
 
-                        <!-- ИСПРАВЛЕНО: Используем ElementStyle -->
-                        <DataGridTextColumn Header="Остаток" Binding="{Binding TotalQuantity}" Width="70" ElementStyle="{StaticResource CenterAlignedCell}"/>
-                        <DataGridTextColumn Header="Цена" Binding="{Binding Price, StringFormat={}{0:0.00} ₽}" Width="90" ElementStyle="{StaticResource RightAlignedCell}"/>
+                        <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="*">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontSize" Value="15"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="TextWrapping" Value="Wrap"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
 
-                        <DataGridTemplateColumn Width="60">
+                        <DataGridTextColumn Header="Остаток" Binding="{Binding TotalQuantity}" Width="80">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="TextAlignment" Value="Center"/>
+                                    <Setter Property="FontSize" Value="14"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="Foreground" Value="DarkGreen"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+                        <!-- Цена с уценкой -->
+                        <DataGridTemplateColumn Header="Цена" Width="140">
+                            <DataGridTemplateColumn.HeaderStyle>
+                                <Style TargetType="DataGridColumnHeader">
+                                    <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                </Style>
+                            </DataGridTemplateColumn.HeaderStyle>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="➕" Command="{Binding DataContext.AddToCartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                            CommandParameter="{Binding}" Style="{StaticResource ModernButton}" Padding="5"/>
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Center">
+                                        <!-- Зачёркнутая старая цена -->
+                                        <TextBlock Text="{Binding Price, StringFormat={}{0:0.00} ₽}"
+                                                   Foreground="DarkGray" FontSize="11"
+                                                   Margin="0,0,6,0"
+                                                   VerticalAlignment="Center">
+                                            <TextBlock.TextDecorations>
+                                                <TextDecoration Location="Strikethrough"/>
+                                            </TextBlock.TextDecorations>
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding HasDiscount}" Value="True">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+
+                                        <!-- Обычная цена -->
+                                        <TextBlock FontWeight="Bold" FontSize="14"
+                                                   Foreground="Black"
+                                                   Text="{Binding Price, StringFormat={}{0:0.00} ₽}"
+                                                   VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding HasDiscount}" Value="True">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+
+                                        <!-- Цена со скидкой -->
+                                        <TextBlock FontWeight="Bold" FontSize="14"
+                                                   Foreground="Crimson"
+                                                   Text="{Binding EffectivePrice, StringFormat={}{0:0.00} ₽}"
+                                                   VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding HasDiscount}" Value="True">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
+
+                <!-- Панель количества + добавить -->
+                <StackPanel Grid.Row="3"
+                            Orientation="Horizontal"
+                            Margin="0,15,0,0"
+                            HorizontalAlignment="Right">
+                    <TextBlock Text="Количество:"
+                               VerticalAlignment="Center"
+                               Margin="0,0,8,0"
+                               FontWeight="SemiBold"
+                               FontSize="14"/>
+                    <TextBox Text="{Binding QuantityToAdd, UpdateSourceTrigger=PropertyChanged}"
+                             Width="60" Padding="6"
+                             VerticalContentAlignment="Center"
+                             TextAlignment="Center"
+                             BorderBrush="SkyBlue" BorderThickness="1"
+                             FontSize="14"/>
+                    <Button Content="➕ В чек"
+                            Command="{Binding AddToCartCommand}"
+                            Style="{StaticResource ModernButton}"
+                            Width="120" FontSize="14"/>
+                </StackPanel>
             </Grid>
         </Border>
 
-        <!-- ПРАВАЯ ЧАСТЬ: Чек и оплата -->
+        <!-- ПРАВАЯ: Чек -->
         <Border Grid.Column="1" Background="White" CornerRadius="8" Padding="15" Margin="10,0,0,0">
             <Grid>
                 <Grid.RowDefinitions>
@@ -93,25 +231,55 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="🛒 Текущий чек" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+                <TextBlock Grid.Row="0"
+                           Text="🛒 Текущий чек"
+                           FontSize="18" FontWeight="Bold"
+                           Margin="0,0,0,10"/>
 
-                <!-- Список товаров в чеке -->
-                <DataGrid Grid.Row="1" ItemsSource="{Binding Cart}" 
+                <DataGrid Grid.Row="1"
+                          ItemsSource="{Binding Cart}"
                           AutoGenerateColumns="False" IsReadOnly="True"
                           CanUserAddRows="False" CanUserDeleteRows="False"
-                          Background="#FAFAFA" GridLinesVisibility="Horizontal">
+                          Background="GhostWhite" GridLinesVisibility="Horizontal">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Товар" Binding="{Binding ProductName}" Width="*"/>
-
-                        <!-- ИСПРАВЛЕНО: Используем ElementStyle -->
-                        <DataGridTextColumn Header="Кол-во" Binding="{Binding Quantity}" Width="50" ElementStyle="{StaticResource CenterAlignedCell}"/>
-                        <DataGridTextColumn Header="Цена" Binding="{Binding PriceAtSale, StringFormat={}{0:0.00} ₽}" Width="80" ElementStyle="{StaticResource RightAlignedCell}"/>
-
-                        <DataGridTemplateColumn Width="50">
+                        <DataGridTemplateColumn Header="Кол-во" Width="70">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="❌" Command="{Binding DataContext.RemoveFromCartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                            CommandParameter="{Binding}" Background="Transparent" BorderThickness="0" Foreground="Red" Cursor="Hand"/>
+                                    <TextBox Text="{Binding Quantity, UpdateSourceTrigger=LostFocus}" 
+                     TextAlignment="Center" Padding="5,2" 
+                     BorderBrush="#E0E0E0" BorderThickness="1"
+                     VerticalContentAlignment="Center" FontSize="13"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Цена" Binding="{Binding PriceAtSale, StringFormat={}{0:0.00} ₽}" Width="85">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="TextAlignment" Value="Right"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                       
+                        <DataGridTextColumn Header="Сумма" Binding="{Binding Subtotal, StringFormat={}{0:0.00} ₽}" Width="90">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="TextAlignment" Value="Right"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="Foreground" Value="#1565C0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTemplateColumn Width="45">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="❌"
+                                            Command="{Binding DataContext.RemoveFromCartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Foreground="Red"
+                                            Cursor="Hand"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -119,39 +287,87 @@
                 </DataGrid>
 
                 <!-- Карта лояльности -->
-                <StackPanel Grid.Row="2" Margin="0,15,0,15">
-                    <TextBlock Text="💳 Карта лояльности (номер):" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                    <TextBox Text="{Binding LoyaltyCardNumber, UpdateSourceTrigger=PropertyChanged}" 
-                             Padding="8" BorderBrush="#90CAF9" BorderThickness="1"/>
-                </StackPanel>
+                <Border Grid.Row="2" Background="Cornsilk" CornerRadius="5" Padding="10" Margin="0,15,0,15">
+                    <StackPanel>
+                        <TextBlock Text="💳 Карта лояльности" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0"
+                                     Text="{Binding LoyaltyCardNumber, UpdateSourceTrigger=PropertyChanged}"
+                                     Padding="6"
+                                     BorderBrush="SandyBrown" BorderThickness="1"
+                                     VerticalContentAlignment="Center"/>
+                            <Button Grid.Column="1"
+                                    Content="Применить"
+                                    Command="{Binding ApplyCardCommand}"
+                                    Style="{StaticResource ModernButton}"
+                                    Width="90"/>
+                            <Button Grid.Column="2"
+                                    Content="✖"
+                                    Command="{Binding ResetCardCommand}"
+                                    Style="{StaticResource ModernButton}"
+                                    Width="40"
+                                    Background="MistyRose"
+                                    Foreground="Firebrick"/>
+                        </Grid>
+                        <TextBlock Text="{Binding CardCustomerName}"
+                                   Margin="0,6,0,0"
+                                   Foreground="Chocolate"
+                                   FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Border>
 
-                <!-- Итоги и кнопки -->
+                <!-- Итоги -->
                 <StackPanel Grid.Row="3">
-                    <Grid Margin="0,0,0,5">
+                    <Grid Margin="0,0,0,4">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Итого:" FontSize="14"/>
-                        <TextBlock Text="{Binding TotalAmount, StringFormat={}{0:0.00} ₽}" Grid.Column="1" FontSize="14" FontWeight="SemiBold"/>
+                        <TextBlock Text="Сумма:" FontSize="14"/>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding TotalAmount, StringFormat={}{0:0.00} ₽}"
+                                   FontSize="14" FontWeight="SemiBold"/>
                     </Grid>
-
-                    <Grid Margin="0,0,0,15">
+                    <Grid Margin="0,0,0,4">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="К оплате:" FontSize="20" FontWeight="Bold" Foreground="#1565C0"/>
-                        <TextBlock Text="{Binding FinalAmount, StringFormat={}{0:0.00} ₽}" Grid.Column="1" FontSize="24" FontWeight="Bold" Foreground="#1565C0"/>
+                        <TextBlock Text="Скидка:" FontSize="14" Foreground="Crimson"/>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding DiscountAmount, StringFormat={}-{0:0.00} ₽}"
+                                   FontSize="14" Foreground="Crimson" FontWeight="SemiBold"/>
                     </Grid>
-
+                    <Separator Margin="0,5"/>
+                    <Grid Margin="0,5,0,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="К оплате:" FontSize="20" FontWeight="Bold" Foreground="RoyalBlue"/>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding FinalAmount, StringFormat={}{0:0.00} ₽}"
+                                   FontSize="24" FontWeight="Bold" Foreground="RoyalBlue"/>
+                    </Grid>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Button Content="Очистить" Command="{Binding ClearCartCommand}" Style="{StaticResource ModernButton}" Background="#FFEBEE" Foreground="#C62828"/>
-                        <Button Content="💰 Оформить продажу" Grid.Column="1" Command="{Binding CheckoutCommand}" Style="{StaticResource CheckoutButton}"/>
+                        <Button Content="Очистить"
+                                Command="{Binding ClearCartCommand}"
+                                Style="{StaticResource ModernButton}"
+                                Background="MistyRose"
+                                Foreground="Firebrick"/>
+                        <Button Grid.Column="1"
+                                Content="💰 Оформить"
+                                Command="{Binding CheckoutCommand}"
+                                Style="{StaticResource CheckoutButton}"/>
                     </Grid>
                 </StackPanel>
             </Grid>

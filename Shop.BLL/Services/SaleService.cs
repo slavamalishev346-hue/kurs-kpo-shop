@@ -216,5 +216,18 @@ namespace Shop.BLL.Services
                 }).ToList() ?? new List<SaleItemDto>()
             };
         }
+        public decimal GetLoyaltyDiscountPercent(string cardNumber)
+        {
+            if (string.IsNullOrWhiteSpace(cardNumber))
+                return 0;
+
+            var card = _unitOfWork.LoyaltyCards.GetList()
+                .FirstOrDefault(c => c.CardNumber == cardNumber);
+
+            if (card == null)
+                throw new InvalidOperationException($"Карта '{cardNumber}' не найдена.");
+
+            return card.Level != null ? (decimal)card.Level.Percent : 0;
+        }
     }
 }

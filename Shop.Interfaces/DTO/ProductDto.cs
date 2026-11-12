@@ -19,7 +19,19 @@ namespace Shop.Interfaces.DTO
        
         public List<SupplyItemDto> SupplyItems { get; set; } = new();
 
-      
-        public string ImageUrl => $"Images/Products/{Article}.jpg";
+        public decimal EffectivePrice
+        {
+            get
+            {
+                var firstAvailable = SupplyItems.FirstOrDefault(si => si.QuantityRemain > 0);
+                if (firstAvailable != null && firstAvailable.DiscountedPrice.HasValue)
+                    return firstAvailable.DiscountedPrice.Value;
+                return Price;
+            }
+        }
+
+        
+        public bool HasDiscount => EffectivePrice < Price;
+       
     }
 }
