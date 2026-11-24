@@ -23,14 +23,17 @@ namespace Shop.Interfaces.DTO
         {
             get
             {
-                var firstAvailable = SupplyItems.FirstOrDefault(si => si.QuantityRemain > 0);
+                var firstAvailable = SupplyItems
+                    .Where(si => si.QuantityRemain > 0)
+                    .OrderBy(si => si.ExpiryDate ?? DateTime.MaxValue)
+                    .FirstOrDefault();
                 if (firstAvailable != null && firstAvailable.DiscountedPrice.HasValue)
                     return firstAvailable.DiscountedPrice.Value;
                 return Price;
             }
         }
 
-        
+
         public bool HasDiscount => EffectivePrice < Price;
        
     }

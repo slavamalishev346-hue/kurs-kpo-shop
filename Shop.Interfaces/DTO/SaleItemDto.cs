@@ -30,7 +30,7 @@ namespace Shop.Interfaces.DTO
             get { return PriceAtSale * Quantity; }
         }
         public event PropertyChangedEventHandler PropertyChanged;
-
+        public bool IsDiscounted { get; set; }
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

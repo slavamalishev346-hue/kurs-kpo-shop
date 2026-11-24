@@ -16,7 +16,6 @@ namespace Shop.DAL.UnitOfWork
         private IProductRepository _products;
         private ISupplyItemRepository _supplyItems;
 
-        // ✅ Добавляем поля для недостающих репозиториев
         private ISaleItemRepository _saleItems;
         private ISupplyRepository _supplies;
         private IReturnItemRepository _returnItems;
@@ -45,7 +44,6 @@ namespace Shop.DAL.UnitOfWork
             get => _supplyItems ??= new SupplyItemRepository(_context);
         }
 
-        // ✅ ИСПРАВЛЕННЫЕ СВОЙСТВА (больше никаких null!)
         public ISaleItemRepository SaleItems
         {
             get => _saleItems ??= new SaleItemRepository(_context);

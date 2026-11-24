@@ -92,40 +92,42 @@ namespace Shop.BLL.Services
         {
             var supplyItems = _unitOfWork.SupplyItems.GetList();
             bool hasChanges = false;
+            DateTime now = DateTime.Now;
 
             foreach (var item in supplyItems)
             {
-                if (item.ExpiryDate.HasValue && item.QuantityRemain > 0)
-                {
-                    var supply = _unitOfWork.SupplyItems.GetById(item.Id)?.Supply;
-                    
+                if (!item.ExpiryDate.HasValue || item.QuantityRemain <= 0) continue;
 
-                    DateTime expiry = new DateTime(item.ExpiryDate.Value.Year, item.ExpiryDate.Value.Month, item.ExpiryDate.Value.Day);
-                    if (expiry <= DateTime.Now.AddDays(30))
-                    {
-                        if (!item.DiscountedPrice.HasValue)
-                        {
-                            item.DiscountedPrice = item.Cost * 0.8; // Скидка 20%
-                            _unitOfWork.SupplyItems.Update(item);
-                            hasChanges = true;
-                        }
-                    }
-                    else
-                    {
-                        if (item.DiscountedPrice.HasValue)
-                        {
-                            item.DiscountedPrice = null;
-                            _unitOfWork.SupplyItems.Update(item);
-                            hasChanges = true;
-                        }
-                    }
+                var supply = _unitOfWork.Supplies.GetById(item.SupplyId);    // дата поставки
+                var product = _unitOfWork.Products.GetById(item.ProductId); // розничная цена
+                if (supply == null || product == null) continue;
+                // для счета
+                DateTime expiry = item.ExpiryDate.Value.ToDateTime(TimeOnly.MinValue);
+                DateTime supplyDate = supply.Date.ToDateTime(TimeOnly.MinValue);
+
+                double totalDays = (expiry - supplyDate).TotalDays;
+                double remainDays = (expiry - now).TotalDays;
+                if (totalDays <= 0) continue;
+
+                double fraction = remainDays / totalDays; 
+
+                double? newPrice;
+                if (fraction <= 0.25)
+                    newPrice = product.Price * 0.7;   
+                //else if (fraction <= 0.5)
+                //    newPrice = product.Price * 0.8;  
+                else
+                    newPrice = null;              
+
+                if (newPrice != item.DiscountedPrice)
+                {
+                    item.DiscountedPrice = newPrice;
+                    _unitOfWork.SupplyItems.Update(item);
+                    hasChanges = true;
                 }
             }
 
-            if (hasChanges)
-            {
-                _unitOfWork.SaveChanges();
-            }
+            if (hasChanges) _unitOfWork.SaveChanges();
         }
 
         public List<ProductDto> GetLowStockProducts()

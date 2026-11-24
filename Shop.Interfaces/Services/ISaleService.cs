@@ -11,7 +11,7 @@ namespace Shop.Interfaces.Services
         List<SaleDto> GetSalesByDateRange(DateTime startDate, DateTime endDate);
 
         SaleDto CreateSale(List<SaleItemDto> items, string cardNumber, int cashierId);
-
+        (decimal Total, decimal Discount, decimal Final) CalculateTotals(List<SaleItemDto> items, decimal discountPercent);
         decimal GetLoyaltyDiscountPercent(string cardNumber);
         void ProcessReturn(int saleId, List<ReturnDto> returnItems, int cashierId);
     }

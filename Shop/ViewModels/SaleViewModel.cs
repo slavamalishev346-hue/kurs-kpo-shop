@@ -37,10 +37,69 @@ namespace Shop.ViewModels
             {
                 _selectedProduct = value;
                 OnPropertyChanged(nameof(SelectedProduct));
+                UpdateBatches();
             }
         }
-        private List<ProductDto> _allProducts; 
+        private ObservableCollection<SupplyItemDto> _availableBatches = new ObservableCollection<SupplyItemDto>();
+        public ObservableCollection<SupplyItemDto> AvailableBatches
+        {
+            get => _availableBatches;
+            set
+            {
+                _availableBatches = value;
+                OnPropertyChanged(nameof(AvailableBatches));
+            }
+        }
 
+        private SupplyItemDto _selectedBatch;
+        public SupplyItemDto SelectedBatch
+        {
+            get => _selectedBatch;
+            set
+            {
+                _selectedBatch = value;
+                OnPropertyChanged(nameof(SelectedBatch));
+                UpdateSelectedBatchPrice();
+            }
+        }
+        private List<ProductDto> _allProducts;
+        private decimal? _selectedBatchPrice;
+        public decimal? SelectedBatchPrice
+        {
+            get => _selectedBatchPrice;
+            set
+            {
+                _selectedBatchPrice = value;
+                OnPropertyChanged(nameof(SelectedBatchPrice));
+            }
+        }
+
+        private void UpdateSelectedBatchPrice()
+        {
+            if (SelectedBatch != null && SelectedProduct != null)
+            {
+                decimal price = SelectedBatch.DiscountedPrice ?? SelectedProduct.Price;
+                SelectedBatchPrice = price;
+                SelectedBatchHasDiscount = price < SelectedProduct.Price;
+            }
+            else
+            {
+                SelectedBatchPrice = null;
+                SelectedBatchHasDiscount = false;
+            }
+        }
+        private bool _selectedBatchHasDiscount;
+        public bool SelectedBatchHasDiscount
+        {
+            get => _selectedBatchHasDiscount;
+            set
+            {
+                _selectedBatchHasDiscount = value;
+                OnPropertyChanged(nameof(SelectedBatchHasDiscount));
+            }
+        }
+
+       
         private string _searchText;
         public string SearchText
         {
@@ -198,7 +257,7 @@ namespace Shop.ViewModels
                 return;
             }
 
-            var supplyItem = product.SupplyItems.FirstOrDefault(si => si.QuantityRemain > 0);
+            var supplyItem = SelectedBatch;
             if (supplyItem == null)
             {
                 MessageBox.Show("Товара нет в наличии!", "Ошибка",
@@ -206,7 +265,13 @@ namespace Shop.ViewModels
                 return;
             }
 
-           
+            if(supplyItem.ExpiryDate.HasValue && supplyItem.ExpiryDate.Value.Date < DateTime.Today)
+{
+                MessageBox.Show(
+                    $"Партия №{supplyItem.Id} просрочена (годен до {supplyItem.ExpiryDate:dd.MM.yyyy}).\nТовар не может быть продан!",
+                    "Просроченный товар", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
             var existingItem = Cart.FirstOrDefault(ci => ci.SupplyItemId == supplyItem.Id);
             int currentQty = existingItem != null ? existingItem.Quantity : 0;
 
@@ -231,7 +296,8 @@ namespace Shop.ViewModels
                     ProductName = existingItem.ProductName,
                     Article = existingItem.Article,
                     Quantity = existingItem.Quantity + QuantityToAdd,
-                    PriceAtSale = existingItem.PriceAtSale
+                    PriceAtSale = existingItem.PriceAtSale,
+                    IsDiscounted = supplyItem.DiscountedPrice.HasValue,
                 });
             }
             else
@@ -242,7 +308,8 @@ namespace Shop.ViewModels
                     ProductName = product.Name,
                     Article = product.Article,
                     Quantity = QuantityToAdd,
-                    PriceAtSale = priceAtSale
+                    PriceAtSale = priceAtSale,
+                    IsDiscounted = supplyItem.DiscountedPrice.HasValue,
                 });
             }
 
@@ -257,14 +324,14 @@ namespace Shop.ViewModels
             RecalculateTotals();
         }
 
-      
+
         private void RecalculateTotals()
         {
-            TotalAmount = Cart.Sum(item => item.PriceAtSale * item.Quantity);
-            DiscountAmount = TotalAmount * CardDiscountPercent / 100m;
-            FinalAmount = TotalAmount - DiscountAmount;
+            var (total, discount, final) = _saleService.CalculateTotals(Cart.ToList(), CardDiscountPercent);
+            TotalAmount = total;
+            DiscountAmount = discount;
+            FinalAmount = final;
         }
-
         private void ApplyLoyaltyCard()
         {
             if (string.IsNullOrWhiteSpace(LoyaltyCardNumber))
@@ -373,6 +440,15 @@ namespace Shop.ViewModels
             {
                 RecalculateTotals();
             }
+        }
+        private void UpdateBatches()
+        {
+            AvailableBatches = new ObservableCollection<SupplyItemDto>(
+                (SelectedProduct?.SupplyItems ?? new List<SupplyItemDto>())
+                    .Where(si => si.QuantityRemain > 0)
+                    .OrderBy(si => si.ExpiryDate ?? DateTime.MaxValue)); 
+
+            SelectedBatch = AvailableBatches.FirstOrDefault();
         }
     }
 }

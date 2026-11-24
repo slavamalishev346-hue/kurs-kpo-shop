@@ -16,7 +16,14 @@ namespace Shop.BLL.Services
         {
             _unitOfWork = unitOfWork;
         }
-
+        public (decimal Total, decimal Discount, decimal Final) CalculateTotals(List<SaleItemDto> items, decimal discountPercent)
+        {
+            decimal total = items.Sum(i => i.PriceAtSale * i.Quantity);
+          
+            decimal discountable = items.Where(i => !i.IsDiscounted).Sum(i => i.PriceAtSale * i.Quantity);
+            decimal discount = discountable * discountPercent / 100m;
+            return (total, discount, total - discount);
+        }
         public SaleDto CreateSale(List<SaleItemDto> items, string cardNumber, int cashierId)
         {
             Loyaltycard loyaltyCard = null;
@@ -27,14 +34,10 @@ namespace Shop.BLL.Services
                     throw new InvalidOperationException($"Карта с номером '{cardNumber}' не найдена.");
             }
 
-            decimal totalAmount = 0;
-
-            //  Сначала собираем все данные пока SupplyItem загружен
-            var itemsData = new List<(int SupplyItemId, int Quantity, double PriceAtSale, string ProductName, string Article)>();
+            var itemsData = new List<(int SupplyItemId, int Quantity, double PriceAtSale, string ProductName, string Article, bool IsDiscounted)>();
 
             foreach (var itemDto in items)
             {
-                // ИСПРАВЛЕНО ЗДЕСЬ: используем GetByIdWithProduct, чтобы подгрузить Product
                 var supplyItem = _unitOfWork.SupplyItems.GetByIdWithProduct(itemDto.SupplyItemId);
 
                 if (supplyItem == null)
@@ -43,6 +46,9 @@ namespace Shop.BLL.Services
                 if (supplyItem.QuantityRemain < itemDto.Quantity)
                     throw new InvalidOperationException($"Недостаточно товара '{supplyItem.Product.Name}'. Доступно: {supplyItem.QuantityRemain}");
 
+                if (supplyItem.ExpiryDate.HasValue && supplyItem.ExpiryDate.Value < DateOnly.FromDateTime(DateTime.Today))
+                    throw new InvalidOperationException($"Товар '{supplyItem.Product.Name}' просрочен — продажа запрещена.");
+
                 double priceAtSale = supplyItem.DiscountedPrice.HasValue ? supplyItem.DiscountedPrice.Value : supplyItem.Product.Price;
 
                 itemsData.Add((
@@ -50,19 +56,20 @@ namespace Shop.BLL.Services
                     itemDto.Quantity,
                     priceAtSale,
                     supplyItem.Product.Name,
-                    supplyItem.Product.Article
+                    supplyItem.Product.Article,
+                    supplyItem.DiscountedPrice.HasValue
                 ));
-
-                totalAmount += (decimal)priceAtSale * itemDto.Quantity;
             }
 
-            decimal discountAmount = 0;
-            if (loyaltyCard != null && loyaltyCard.Level != null)
-            {
-                discountAmount = totalAmount * (decimal)(loyaltyCard.Level.Percent / 100.0);
-            }
-
-            decimal finalAmount = totalAmount - discountAmount;
+            decimal percent = loyaltyCard?.Level != null ? (decimal)loyaltyCard.Level.Percent : 0m;
+            var (totalAmount, discountAmount, finalAmount) = CalculateTotals(
+                itemsData.Select(d => new SaleItemDto
+                {
+                    Quantity = d.Quantity,
+                    PriceAtSale = (decimal)d.PriceAtSale,
+                    IsDiscounted = d.IsDiscounted
+                }).ToList(),
+                percent);
 
             var sale = new Sale
             {
@@ -77,7 +84,6 @@ namespace Shop.BLL.Services
             _unitOfWork.Sales.Add(sale);
             _unitOfWork.SaveChanges();
 
-            // Создаем SaleItem
             foreach (var data in itemsData)
             {
                 var newSaleItem = new Saleitem
@@ -90,7 +96,6 @@ namespace Shop.BLL.Services
 
                 _unitOfWork.SaleItems.Add(newSaleItem);
 
-               
                 var supplyItem = _unitOfWork.SupplyItems.GetById(data.SupplyItemId);
                 supplyItem.QuantityRemain -= data.Quantity;
                 _unitOfWork.SupplyItems.Update(supplyItem);
@@ -121,7 +126,8 @@ namespace Shop.BLL.Services
                     Quantity = d.Quantity,
                     PriceAtSale = (decimal)d.PriceAtSale,
                     ProductName = d.ProductName,
-                    Article = d.Article
+                    Article = d.Article,
+                    IsDiscounted = d.IsDiscounted
                 }).ToList()
             };
         }
@@ -221,8 +227,7 @@ namespace Shop.BLL.Services
             if (string.IsNullOrWhiteSpace(cardNumber))
                 return 0;
 
-            var card = _unitOfWork.LoyaltyCards.GetList()
-                .FirstOrDefault(c => c.CardNumber == cardNumber);
+            var card = _unitOfWork.LoyaltyCards.GetByCardNumber(cardNumber);
 
             if (card == null)
                 throw new InvalidOperationException($"Карта '{cardNumber}' не найдена.");

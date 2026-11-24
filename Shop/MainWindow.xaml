@@ -15,15 +15,20 @@
 
         <!-- менюха -->
         <Border Grid.Column="0" Background="DarkSlateGray">
-            <StackPanel>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
                 <!-- Шапка с именем  -->
-                <Border Background="DarkGray" Height="60">
+                <Border Grid.Row="0" Background="DarkGray" Height="60">
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                         <TextBlock Text="Пользователь" 
                                    Foreground="White" 
                                    FontSize="16"
-                                   FontWeight="Bold" Height="25"
-                                   />
+                                   FontWeight="Bold" Height="25"/>
                         <TextBlock Text="{Binding CurrentUser.FullName}" 
                                    Foreground="White" 
                                    HorizontalAlignment="Center"
@@ -36,51 +41,101 @@
                 </Border>
 
                 <!-- Кнопки меню -->
-                <Button Content="Касса" 
+                <StackPanel Grid.Row="1">
+                    <Button Content="Касса" 
+                            Height="50"
+                            Margin="10"
+                            Command="{Binding NavigateCommand}"
+                            CommandParameter="Sale">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CurrentSection}" Value="Sale">
+                                        <Setter Property="Background" Value="SkyBlue"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Content="Товары" 
+                            Height="50"
+                            Margin="10"
+                            Command="{Binding NavigateCommand}"
+                            CommandParameter="Products"
+                            Visibility="{Binding CanManageProducts}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CurrentSection}" Value="Products">
+                                        <Setter Property="Background" Value="SkyBlue"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Content="Поставки" 
+                            Height="50"
+                            Margin="10"
+                            Command="{Binding NavigateCommand}"
+                            CommandParameter="Supplies"
+                            Visibility="{Binding CanManageSupplies}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CurrentSection}" Value="Supplies">
+                                        <Setter Property="Background" Value="SkyBlue"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Content="Карты лояльности" 
+                            Height="50"
+                            Margin="10"
+                            Command="{Binding NavigateCommand}"
+                            CommandParameter="Loyalty"
+                            Visibility="{Binding CanManageLoyalty}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CurrentSection}" Value="Loyalty">
+                                        <Setter Property="Background" Value="SkyBlue"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Content="Отчёты" 
+                            Height="50"
+                            Margin="10"
+                            Command="{Binding NavigateCommand}"
+                            CommandParameter="Reports"
+                            Visibility="{Binding CanViewReports}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CurrentSection}" Value="Reports">
+                                        <Setter Property="Background" Value="SkyBlue"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+
+                <Button Grid.Row="2"
+                        Content="Выход" 
                         Height="50"
                         Margin="10"
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="Sale"/>
-
-                <Button Content="Товары" 
-                        Height="50"
-                        Margin="10"
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="Products"
-                        Visibility="{Binding CanManageProducts}"/>
-
-                <Button Content="Поставки" 
-                        Height="50"
-                        Margin="10"
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="Supplies"
-                        Visibility="{Binding CanManageSupplies}"/>
-
-                <Button Content="Карты лояльности" 
-                        Height="50"
-                        Margin="10"
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="Loyalty"
-                        Visibility="{Binding CanManageLoyalty}"/>
-
-                <Button Content="Отчёты" 
-                        Height="50"
-                        Margin="10"
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="Reports"
-                        Visibility="{Binding CanViewReports}"/>
-
-
-                <Button Content="Выход" 
-                        Height="50"
-                        Margin="10"
-                        VerticalAlignment="Bottom"
                         Command="{Binding LogoutCommand}"
                         Background="Red"
                         Foreground="White"/>
-            </StackPanel>
+            </Grid>
         </Border>
-
 
         <Border Grid.Column="1" Background="LightGray">
             <ContentControl Content="{Binding CurrentView}"/>

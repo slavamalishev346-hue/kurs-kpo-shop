@@ -33,115 +33,117 @@
         </Grid.ColumnDefinitions>
 
         <!-- ЛЕВАЯ: Товары -->
-        <Border Grid.Column="0" Background="White" CornerRadius="8" Padding="15" Margin="0,0,10,0">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+            <Border Grid.Column="0" Background="White" CornerRadius="8" Padding="15" Margin="0,0,10,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0"
-                           Text="📦 Доступные товары"
-                           FontSize="18" FontWeight="Bold"
-                           Margin="0,0,0,10"
-                           HorizontalAlignment="Left"/>
+                    <TextBlock Grid.Row="0"
+                   Text="📦 Доступные товары"
+                   FontSize="18" FontWeight="Bold"
+                   Margin="0,0,0,10"
+                   HorizontalAlignment="Left"/>
 
-                <TextBox Grid.Row="1"
-                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                         Padding="8" Margin="0,0,0,10"
-                         BorderBrush="SkyBlue" BorderThickness="1"
-                         VerticalContentAlignment="Center" FontSize="13"/>
+                    <StackPanel Grid.Row="1" Margin="0,0,0,10">
+                        <TextBlock Text="🔎 Поиск товара "
+                       FontSize="13" FontWeight="SemiBold"
+                       Foreground="DimGray"
+                       Margin="2,0,0,4"/>
+                        <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                     Padding="8"
+                     BorderBrush="SkyBlue" BorderThickness="1"
+                     VerticalContentAlignment="Center" FontSize="13"/>
+                    </StackPanel>
 
-                <DataGrid Grid.Row="2"
-                          ItemsSource="{Binding AvailableProducts}"
-                          SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
-                          AutoGenerateColumns="False" IsReadOnly="True"
-                          CanUserAddRows="False" CanUserDeleteRows="False"
-                          RowBackground="White" AlternatingRowBackground="GhostWhite"
-                          GridLinesVisibility="Horizontal"
-                          RowHeight="50"
-                          BorderThickness="0">
+                    <DataGrid Grid.Row="2"
+                  ItemsSource="{Binding AvailableProducts}"
+                  SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
+                  AutoGenerateColumns="False" IsReadOnly="True"
+                  CanUserAddRows="False" CanUserDeleteRows="False"
+                  RowBackground="White" AlternatingRowBackground="GhostWhite"
+                  GridLinesVisibility="Horizontal"
+                  RowHeight="50"
+                  BorderThickness="0"
+                  RowDetailsVisibilityMode="VisibleWhenSelected">
 
-                    <DataGrid.ColumnHeaderStyle>
-                        <Style TargetType="DataGridColumnHeader">
-                            <Setter Property="FontSize" Value="13"/>
-                            <Setter Property="FontWeight" Value="SemiBold"/>
-                            <Setter Property="Padding" Value="10,8"/>
-                            <Setter Property="Background" Value="WhiteSmoke"/>
-                            <Setter Property="Foreground" Value="DimGray"/>
-                            <Setter Property="BorderBrush" Value="Gainsboro"/>
-                            <Setter Property="BorderThickness" Value="0,0,0,1"/>
-                        </Style>
-                    </DataGrid.ColumnHeaderStyle>
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="FontSize" Value="13"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="Padding" Value="10,8"/>
+                                <Setter Property="Background" Value="WhiteSmoke"/>
+                                <Setter Property="Foreground" Value="DimGray"/>
+                                <Setter Property="BorderBrush" Value="Gainsboro"/>
+                                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
 
-                    <DataGrid.CellStyle>
-                        <Style TargetType="DataGridCell">
-                            <Setter Property="Padding" Value="10,5"/>
-                            <Setter Property="VerticalContentAlignment" Value="Center"/>
-                            <Setter Property="BorderThickness" Value="0"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Background" Value="AliceBlue"/>
-                                    <Setter Property="Foreground" Value="RoyalBlue"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </DataGrid.CellStyle>
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="Padding" Value="10,5"/>
+                                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="AliceBlue"/>
+                                        <Setter Property="Foreground" Value="RoyalBlue"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.CellStyle>
 
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Артикул" Binding="{Binding Article}" Width="90">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="FontSize" Value="12"/>
-                                    <Setter Property="FontWeight" Value="SemiBold"/>
-                                    <Setter Property="Foreground" Value="Gray"/>
-                                    <Setter Property="VerticalAlignment" Value="Center"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Артикул" Binding="{Binding Article}" Width="90">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="FontSize" Value="12"/>
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                        <Setter Property="Foreground" Value="Gray"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
 
-                        <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="*">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="FontSize" Value="15"/>
-                                    <Setter Property="FontWeight" Value="SemiBold"/>
-                                    <Setter Property="VerticalAlignment" Value="Center"/>
-                                    <Setter Property="TextWrapping" Value="Wrap"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
+                            <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="*">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="FontSize" Value="15"/>
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="TextWrapping" Value="Wrap"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
 
-                        <DataGridTextColumn Header="Остаток" Binding="{Binding TotalQuantity}" Width="80">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="TextAlignment" Value="Center"/>
-                                    <Setter Property="FontSize" Value="14"/>
-                                    <Setter Property="FontWeight" Value="Bold"/>
-                                    <Setter Property="Foreground" Value="DarkGreen"/>
-                                    <Setter Property="VerticalAlignment" Value="Center"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
+                            <DataGridTextColumn Header="Остаток" Binding="{Binding TotalQuantity}" Width="80">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextAlignment" Value="Center"/>
+                                        <Setter Property="FontSize" Value="14"/>
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                        <Setter Property="Foreground" Value="DarkGreen"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
 
-                        <!-- Цена с уценкой -->
-                        <DataGridTemplateColumn Header="Цена" Width="140">
-                            <DataGridTemplateColumn.HeaderStyle>
-                                <Style TargetType="DataGridColumnHeader">
-                                    <Setter Property="HorizontalContentAlignment" Value="Right"/>
-                                </Style>
-                            </DataGridTemplateColumn.HeaderStyle>
+                            <!-- Цена с уценкой -->
+                            <DataGridTemplateColumn Header="Цена" Width="140">
+                                <DataGridTemplateColumn.HeaderStyle>
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="HorizontalContentAlignment" Value="Right"/>
+                                    </Style>
+                                </DataGridTemplateColumn.HeaderStyle>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <StackPanel Orientation="Horizontal"
-                                                HorizontalAlignment="Right"
-                                                VerticalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                                         <!-- Зачёркнутая старая цена -->
                                         <TextBlock Text="{Binding Price, StringFormat={}{0:0.00} ₽}"
-                                                   Foreground="DarkGray" FontSize="11"
-                                                   Margin="0,0,6,0"
-                                                   VerticalAlignment="Center">
+                       Foreground="DarkGray" FontSize="11" Margin="0,0,6,0" VerticalAlignment="Center">
                                             <TextBlock.TextDecorations>
                                                 <TextDecoration Location="Strikethrough"/>
                                             </TextBlock.TextDecorations>
@@ -152,21 +154,37 @@
                                                         <DataTrigger Binding="{Binding HasDiscount}" Value="True">
                                                             <Setter Property="Visibility" Value="Visible"/>
                                                         </DataTrigger>
+                                                        <!-- Строка выбрана: зачёркивание только если выбранная партия уценена -->
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=DataGridRow}}" Value="True"/>
+                                                                <Condition Binding="{Binding DataContext.SelectedBatchHasDiscount, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="False"/>
+                                                            </MultiDataTrigger.Conditions>
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </MultiDataTrigger>
+                                                        <MultiDataTrigger>
+                                                            <MultiDataTrigger.Conditions>
+                                                                <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=DataGridRow}}" Value="True"/>
+                                                                <Condition Binding="{Binding DataContext.SelectedBatchHasDiscount, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True"/>
+                                                            </MultiDataTrigger.Conditions>
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </MultiDataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
                                             </TextBlock.Style>
                                         </TextBlock>
 
-                                        <!-- Обычная цена -->
-                                        <TextBlock FontWeight="Bold" FontSize="14"
-                                                   Foreground="Black"
-                                                   Text="{Binding Price, StringFormat={}{0:0.00} ₽}"
-                                                   VerticalAlignment="Center">
+                                        <!-- Цена по умолчанию (для невыбранных строк) -->
+                                        <TextBlock FontWeight="Bold" FontSize="14" VerticalAlignment="Center"
+                       Text="{Binding EffectivePrice, StringFormat={}{0:0.00} ₽}">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
-                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Setter Property="Foreground" Value="Black"/>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding HasDiscount}" Value="True">
+                                                            <Setter Property="Foreground" Value="Crimson"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=DataGridRow}}" Value="True">
                                                             <Setter Property="Visibility" Value="Collapsed"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -174,17 +192,19 @@
                                             </TextBlock.Style>
                                         </TextBlock>
 
-                                        <!-- Цена со скидкой -->
-                                        <TextBlock FontWeight="Bold" FontSize="14"
-                                                   Foreground="Crimson"
-                                                   Text="{Binding EffectivePrice, StringFormat={}{0:0.00} ₽}"
-                                                   VerticalAlignment="Center">
+                                        <!-- Цена выбранной партии (только для выбранной строки) -->
+                                        <TextBlock FontWeight="Bold" FontSize="14" VerticalAlignment="Center"
+                       Text="{Binding DataContext.SelectedBatchPrice, RelativeSource={RelativeSource AncestorType=UserControl}, StringFormat={}{0:0.00} ₽}">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Setter Property="Foreground" Value="Black"/>
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding HasDiscount}" Value="True">
+                                                        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=DataGridRow}}" Value="True">
                                                             <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding DataContext.SelectedBatchHasDiscount, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
+                                                            <Setter Property="Foreground" Value="Crimson"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -194,34 +214,63 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
+                        </DataGrid.Columns>
 
-                <!-- Панель количества + добавить -->
-                <StackPanel Grid.Row="3"
-                            Orientation="Horizontal"
-                            Margin="0,15,0,0"
-                            HorizontalAlignment="Right">
-                    <TextBlock Text="Количество:"
-                               VerticalAlignment="Center"
-                               Margin="0,0,8,0"
-                               FontWeight="SemiBold"
-                               FontSize="14"/>
-                    <TextBox Text="{Binding QuantityToAdd, UpdateSourceTrigger=PropertyChanged}"
-                             Width="60" Padding="6"
-                             VerticalContentAlignment="Center"
-                             TextAlignment="Center"
-                             BorderBrush="SkyBlue" BorderThickness="1"
-                             FontSize="14"/>
-                    <Button Content="➕ В чек"
-                            Command="{Binding AddToCartCommand}"
-                            Style="{StaticResource ModernButton}"
-                            Width="120" FontSize="14"/>
-                </StackPanel>
-            </Grid>
-        </Border>
+                        <!-- Раскрытие под выбранным товаром: партии + количество + добавить -->
+                        <DataGrid.RowDetailsTemplate>
+                            <DataTemplate>
+                                <Border Background="#F0F6FF" Padding="10" Margin="0,0,0,4">
+                                    <StackPanel>
+                                        <TextBlock Text="Партии товара:"
+                                       FontWeight="SemiBold" FontSize="13"
+                                       Margin="0,0,0,4"/>
+                                        <ListBox ItemsSource="{Binding DataContext.AvailableBatches, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                     SelectedItem="{Binding DataContext.SelectedBatch, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"
+                                     MaxHeight="90"
+                                     BorderBrush="SkyBlue" BorderThickness="1"
+                                     Background="White">
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock FontSize="13">
+                                                        <TextBlock.Text>
+                                                            <MultiBinding StringFormat="№{0} · до {1:dd.MM.yyyy} · ост. {2} шт">
+                                                                <Binding Path="Id"/>
+                                                                <Binding Path="ExpiryDate" TargetNullValue="—"/>
+                                                                <Binding Path="QuantityRemain"/>
+                                                            </MultiBinding>
+                                                        </TextBlock.Text>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+                                        <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Right"
+                                        Margin="0,8,0,0">
+                                            
+                                            <TextBlock Text="Количество:"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,8,0"
+                                           FontWeight="SemiBold" FontSize="14"/>
+                                            <TextBox Text="{Binding DataContext.QuantityToAdd, RelativeSource={RelativeSource AncestorType=UserControl}, UpdateSourceTrigger=PropertyChanged}"
+                                         Width="60" Padding="6"
+                                         VerticalContentAlignment="Center"
+                                         TextAlignment="Center"
+                                         BorderBrush="SkyBlue" BorderThickness="1"
+                                         FontSize="14"/>
+                                            <Button Content="➕ В чек"
+                                        Command="{Binding DataContext.AddToCartCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        Style="{StaticResource ModernButton}"
+                                        Width="120" FontSize="14"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </DataGrid.RowDetailsTemplate>
+                    </DataGrid>
+                </Grid>
+            </Border>
 
-        <!-- ПРАВАЯ: Чек -->
+            <!-- ПРАВАЯ: Чек -->
         <Border Grid.Column="1" Background="White" CornerRadius="8" Padding="15" Margin="10,0,0,0">
             <Grid>
                 <Grid.RowDefinitions>

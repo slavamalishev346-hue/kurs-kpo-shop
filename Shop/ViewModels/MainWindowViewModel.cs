@@ -35,7 +35,16 @@ namespace Shop.ViewModels
             set { _currentView = value; OnPropertyChanged(); }
         }
 
-       
+        private string _currentSection;
+        public string CurrentSection
+        {
+            get => _currentSection;
+            set
+            {
+                _currentSection = value;
+                OnPropertyChanged(nameof(CurrentSection));
+            }
+        }
         public string UserInfo => $"{CurrentUser?.FullName} ({CurrentUser?.Role?.Name})";
 
         
@@ -63,8 +72,10 @@ namespace Shop.ViewModels
 
         private void Navigate(object parameter)
         {
+            
             if (parameter is string viewName)
             {
+                CurrentSection = viewName;
                 switch (viewName)
                 {
                     
