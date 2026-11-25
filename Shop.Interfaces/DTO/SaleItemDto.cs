@@ -31,6 +31,26 @@ namespace Shop.Interfaces.DTO
         }
         public event PropertyChangedEventHandler PropertyChanged;
         public bool IsDiscounted { get; set; }
+        public int AlreadyReturned { get; set; }
+
+        public int AvailableToReturn
+        {
+            get { return Quantity - AlreadyReturned; }
+        }
+
+        private int _returnQuantity;
+        public int ReturnQuantity
+        {
+            get { return _returnQuantity; }
+            set
+            {
+                if (_returnQuantity != value)
+                {
+                    _returnQuantity = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

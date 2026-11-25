@@ -57,7 +57,21 @@
                             </Style>
                         </Button.Style>
                     </Button>
-
+                    <Button Content="Возвраты" 
+                            Height="50"
+                            Margin="10"
+                            Command="{Binding NavigateCommand}"
+                            CommandParameter="Returns">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CurrentSection}" Value="Returns">
+                                        <Setter Property="Background" Value="SkyBlue"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                     <Button Content="Товары" 
                             Height="50"
                             Margin="10"

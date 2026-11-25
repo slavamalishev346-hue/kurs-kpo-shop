@@ -393,8 +393,10 @@ namespace Shop.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(
+     "Ошибка: " + (ex.InnerException?.Message ?? ex.Message) +
+     $"\n[кассир в VM = {_currentCashierId}]",
+     "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
       

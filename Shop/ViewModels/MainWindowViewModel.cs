@@ -20,12 +20,14 @@ namespace Shop.ViewModels
             {
                 _currentUser = value;
                 OnPropertyChanged();
-               
+
                 OnPropertyChanged(nameof(CanManageProducts));
                 OnPropertyChanged(nameof(CanManageSupplies));
                 OnPropertyChanged(nameof(CanManageLoyalty));
                 OnPropertyChanged(nameof(CanViewReports));
                 OnPropertyChanged(nameof(UserInfo));
+
+                Navigate(CurrentSection ?? "Sale");
             }
         }
 
@@ -78,10 +80,15 @@ namespace Shop.ViewModels
                 CurrentSection = viewName;
                 switch (viewName)
                 {
-                    
+
                     case "Sale":
-                       
-                        int cashierId = CurrentUser?.Id ?? 0;
+                        if (CurrentUser == null)
+                        {
+                            CurrentView = null;
+                            return;
+                        }
+
+                        int cashierId = CurrentUser.Id;
 
                         var saleViewModel = new SaleViewModel(
                             App.Kernel.Get<ISaleService>(),
@@ -93,6 +100,8 @@ namespace Shop.ViewModels
                         saleView.DataContext = saleViewModel;
                         CurrentView = saleView;
                         break;
+
+                       
                     case "Products":
                         var productsViewModel = App.Kernel.Get<ProductsViewModel>();
                         var productsView = new ProductsView();
@@ -112,7 +121,25 @@ namespace Shop.ViewModels
                     case "Reports":
                         CurrentView = new ReportsView();
                         break;
-              
+                    case "Returns":
+                        if (CurrentUser == null)
+                        {
+                            CurrentView = null;
+                            return;
+                        }
+
+                        int returnCashierId = CurrentUser.Id;
+
+                        var returnsViewModel = new ReturnsViewModel(
+                            App.Kernel.Get<ISaleService>(),
+                            returnCashierId
+                        );
+
+                        var returnsView = new ReturnsView();
+                        returnsView.DataContext = returnsViewModel;
+                        CurrentView = returnsView;
+                        break;
+
                 }
             }
         }

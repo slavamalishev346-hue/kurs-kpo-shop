@@ -125,7 +125,6 @@ public partial class MagazContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("report_adminId_fkey");
         });
-
         modelBuilder.Entity<Returnitem>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("returnitem_pkey");
@@ -136,6 +135,8 @@ public partial class MagazContext : DbContext
             entity.Property(e => e.CashierId).HasColumnName("cashierId");
             entity.Property(e => e.Quantity).HasColumnName("quantity");
             entity.Property(e => e.SaleItemId).HasColumnName("saleItemId");
+
+            entity.Property(e => e.Date).HasColumnType("timestamp without time zone");
 
             entity.HasOne(d => d.Cashier).WithMany(p => p.Returnitems)
                 .HasForeignKey(d => d.CashierId)

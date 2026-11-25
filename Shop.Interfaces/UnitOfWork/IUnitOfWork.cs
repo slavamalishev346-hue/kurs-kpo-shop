@@ -5,7 +5,6 @@ namespace Shop.Interfaces.UnitOfWork
 {
     public interface IUnitOfWork : IDisposable
     {
-        // Специфичные репозитории
         IProductRepository Products { get; }
         ISaleRepository Sales { get; }
         ISaleItemRepository SaleItems { get; }
@@ -16,7 +15,6 @@ namespace Shop.Interfaces.UnitOfWork
         IUserRepository Users { get; }
         IReturnItemRepository ReturnItems { get; }
 
-        // Метод для сохранения всех изменений в БД одной транзакцией
         int SaveChanges();
     }
 }

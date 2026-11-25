@@ -18,7 +18,7 @@ namespace Shop.Interfaces.DTO
         public int? LoyaltyCardId { get; set; }
         public string CardNumber { get; set; }
 
-
+        public bool IsFullyReturned { get; set; }
         public List<SaleItemDto> Items { get; set; } = new List<SaleItemDto>();
     }
 }

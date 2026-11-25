@@ -136,12 +136,55 @@ namespace Shop.BLL.Services
         {
             var sale = _unitOfWork.Sales.GetById(saleId);
             if (sale == null) throw new InvalidOperationException("Продажа не найдена");
-            return MapToDto(sale);
+
+            var dto = MapToDto(sale);
+
+            var saleItems = _unitOfWork.SaleItems.GetBySaleId(saleId).ToList();
+            var returns = _unitOfWork.ReturnItems.GetList().ToList();
+
+            dto.Items = saleItems.Select(si =>
+            {
+                var supplyItem = _unitOfWork.SupplyItems.GetByIdWithProduct(si.SupplyItemId);
+
+                return new SaleItemDto
+                {
+                    Id = si.Id,
+                    SupplyItemId = si.SupplyItemId,
+                    Quantity = si.Quantity,
+                    PriceAtSale = (decimal)si.PriceAtSale,
+                    ProductName = supplyItem?.Product?.Name,
+                    Article = supplyItem?.Product?.Article,
+                    AlreadyReturned = returns.Where(r => r.SaleItemId == si.Id).Sum(r => r.Quantity)
+                };
+            }).ToList();
+
+            return dto;
         }
 
         public List<SaleDto> GetAllSales()
         {
-            return _unitOfWork.Sales.GetList().Select(MapToDto).ToList();
+            var sales = _unitOfWork.Sales.GetList().Select(MapToDto).ToList();
+
+            var saleItems = _unitOfWork.SaleItems.GetList().ToList();
+            var returns = _unitOfWork.ReturnItems.GetList().ToList();
+
+            var soldBySale = saleItems
+                .GroupBy(si => si.SaleId)
+                .ToDictionary(g => g.Key, g => g.Sum(si => si.Quantity));
+
+            var returnedBySale = saleItems
+                .Join(returns, si => si.Id, r => r.SaleItemId, (si, r) => new { si.SaleId, r.Quantity })
+                .GroupBy(x => x.SaleId)
+                .ToDictionary(g => g.Key, g => g.Sum(x => x.Quantity));
+
+            foreach (var dto in sales)
+            {
+                soldBySale.TryGetValue(dto.Id, out var sold);
+                returnedBySale.TryGetValue(dto.Id, out var returned);
+                dto.IsFullyReturned = sold > 0 && returned >= sold;
+            }
+
+            return sales;
         }
 
         public List<SaleDto> GetSalesByDateRange(DateTime startDate, DateTime endDate)
@@ -154,34 +197,56 @@ namespace Shop.BLL.Services
         public void ProcessReturn(int saleId, List<ReturnDto> returnItems, int cashierId)
         {
             var sale = _unitOfWork.Sales.GetById(saleId);
-            if (sale == null) throw new InvalidOperationException("Оригинальная продажа не найдена.");
+            if (sale == null)
+                throw new InvalidOperationException("Оригинальная продажа не найдена.");
+
+            // Грузим строки чека и возвраты по ним отдельно
+            var originalItems = _unitOfWork.SaleItems.GetBySaleId(saleId).ToList();
+            var saleItemIds = originalItems.Select(i => i.Id).ToList();
+            var relevantReturns = _unitOfWork.ReturnItems.GetList()
+                .Where(r => saleItemIds.Contains(r.SaleItemId)).ToList();
+
+            bool hasItemsToReturn = false;
 
             foreach (var retDto in returnItems)
             {
-                var originalSaleItem = sale.Saleitems.FirstOrDefault(si => si.Id == retDto.SaleItemId);
+                if (retDto.Quantity <= 0) continue;
+                hasItemsToReturn = true;
+
+                var originalSaleItem = originalItems.FirstOrDefault(si => si.Id == retDto.SaleItemId);
                 if (originalSaleItem == null)
                     throw new InvalidOperationException("Товар не найден в оригинальном чеке.");
 
-                if (originalSaleItem.Quantity < retDto.Quantity)
-                    throw new InvalidOperationException($"Нельзя вернуть больше товара, чем было продано (Продано: {originalSaleItem.Quantity}, Возврат: {retDto.Quantity})");
+                // Защита от повторного возврата
+                int alreadyReturned = relevantReturns.Where(r => r.SaleItemId == originalSaleItem.Id).Sum(r => r.Quantity);
+                int availableToReturn = originalSaleItem.Quantity - alreadyReturned;
 
+                if (retDto.Quantity > availableToReturn)
+                    throw new InvalidOperationException($"Нельзя вернуть {retDto.Quantity} шт. Доступно только {availableToReturn} шт.");
+
+                // Возвращаем остаток в партию
                 var supplyItem = _unitOfWork.SupplyItems.GetById(originalSaleItem.SupplyItemId);
                 supplyItem.QuantityRemain += retDto.Quantity;
                 _unitOfWork.SupplyItems.Update(supplyItem);
 
+                // Пишем факт возврата в БД с датой и суммой
                 var returnItem = new Returnitem
                 {
                     SaleItemId = originalSaleItem.Id,
                     Quantity = retDto.Quantity,
-                    CashierId = cashierId
+                    CashierId = cashierId,
+                    Date = DateTime.Now,
+                    Amount = retDto.Quantity * originalSaleItem.PriceAtSale
                 };
 
                 _unitOfWork.ReturnItems.Add(returnItem);
             }
 
+            if (!hasItemsToReturn)
+                throw new InvalidOperationException("Нет товаров для возврата (количество равно 0).");
+
             _unitOfWork.SaveChanges();
         }
-
         private void CheckAndUpgradeLoyaltyLevel(Loyaltycard card)
         {
             var levels = _unitOfWork.LoyaltyLevels.GetList().OrderBy(l => l.Percent).ToList();
@@ -233,6 +298,10 @@ namespace Shop.BLL.Services
                 throw new InvalidOperationException($"Карта '{cardNumber}' не найдена.");
 
             return card.Level != null ? (decimal)card.Level.Percent : 0;
+        }
+        public decimal CalculateRefund(List<SaleItemDto> items)
+        {
+            return items.Sum(i => i.PriceAtSale * i.ReturnQuantity);
         }
     }
 }
